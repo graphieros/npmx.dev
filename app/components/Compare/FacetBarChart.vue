@@ -98,9 +98,11 @@ const skeletonDataset = computed(() =>
 )
 
 function buildExportFilename(extension: string): string {
-  const sanitized = props.packages.map(p => sanitise(p).slice(0, 10)).join('_')
-  const comparisonLabel = $t('compare.packages.section_comparison')
-  return `${props.label}_${comparisonLabel}_${sanitized}.${extension}`
+  const sanitizedPackages = props.packages.map(p => sanitise(p).slice(0, 10)).join('_')
+  const comparisonLabel = sanitise($t('compare.packages.section_comparison'))
+  const facetLabel = sanitise(props.label)
+  return `${facetLabel}_${comparisonLabel}_${sanitizedPackages}.${extension}`
+}
 }
 
 const config = computed<VueUiHorizontalBarConfig>(() => {
