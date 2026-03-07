@@ -241,7 +241,7 @@ const config = computed<VueUiHorizontalBarConfig>(() => {
           <SkeletonInline class="h-4 w-28" />
         </div>
         <div class="flex flex-col gap-1">
-          <SkeletonInline class="h-7 w-full" v-for="(_, i) in packages" />
+          <SkeletonInline class="h-7 w-full" v-for="pkg in packages" :key="pkg" />
         </div>
       </template>
     </ClientOnly>
@@ -252,7 +252,7 @@ const config = computed<VueUiHorizontalBarConfig>(() => {
         <SkeletonInline class="h-4 w-28" />
       </div>
       <div class="flex flex-col gap-1">
-        <SkeletonInline class="h-7 w-full" v-for="(_, i) in packages" />
+        <SkeletonInline class="h-7 w-full" v-for="pkg in packages" :key="pkg" />
       </div>
     </template>
   </div>
