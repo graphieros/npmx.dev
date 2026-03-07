@@ -21,7 +21,6 @@ const props = defineProps<{
   facetLoading?: boolean
 }>()
 
-// const { accentColors, selectedAccentColor } = useAccentColor()
 const colorMode = useColorMode()
 const resolvedMode = shallowRef<'light' | 'dark'>('light')
 const rootEl = shallowRef<HTMLElement | null>(null)
@@ -88,7 +87,7 @@ const dataset = computed<VueUiHorizontalBarDatasetItem[]>(() => {
 })
 
 const skeletonDataset = computed(() =>
-  props.packages.map((pkg, i) => {
+  props.packages.map((_pkg, i) => {
     return {
       name: '_',
       value: i + 1,
