@@ -16,9 +16,13 @@ const ACCENT_COLORS = ['#60a5fa', '#f472b6', '#34d399', '#fbbf24']
 
 const displayPackages = computed(() => {
   const raw = props.packages
-  const list = typeof raw === 'string'
-    ? raw.split(',').map(p => p.trim()).filter(Boolean)
-    : raw
+  const list =
+    typeof raw === 'string'
+      ? raw
+          .split(',')
+          .map(p => p.trim())
+          .filter(Boolean)
+      : raw
   return list.slice(0, 4)
 })
 </script>
@@ -57,7 +61,8 @@ const displayPackages = computed(() => {
             class="opacity-80 tracking-[-0.1em]"
             :style="{ color: primaryColor }"
             style="margin-left: -1rem; margin-right: 0.5rem"
-          >./</span>compare
+            >./</span
+          >compare
         </h1>
       </div>
 
@@ -78,9 +83,7 @@ const displayPackages = computed(() => {
           >
             {{ pkg }}
           </span>
-          <span v-if="index < displayPackages.length - 1">
-            vs
-          </span>
+          <span v-if="index < displayPackages.length - 1"> vs </span>
         </template>
       </div>
     </div>
