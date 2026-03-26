@@ -38,6 +38,8 @@ interface PkgStats {
 
 const stats = ref<PkgStats[]>([])
 
+const FETCH_TIMEOUT_MS = 2500
+
 try {
   const results = await Promise.all(
     displayPackages.value.map(async (name, index) => {
@@ -45,10 +47,15 @@ try {
       const [dlData, pkgData] = await Promise.all([
         $fetch<{ downloads: number }>(
           `https://api.npmjs.org/downloads/point/last-week/${encoded}`,
+          { timeout: FETCH_TIMEOUT_MS },
         ).catch(() => null),
-        $fetch<{ 'dist-tags'?: { latest?: string } }>(`https://registry.npmjs.org/${encoded}`, {
-          headers: { Accept: 'application/vnd.npm.install-v1+json' },
-        }).catch(() => null),
+        $fetch<{ 'dist-tags'?: { latest?: string } }>(
+          `https://registry.npmjs.org/${encoded}`,
+          {
+            timeout: FETCH_TIMEOUT_MS,
+            headers: { Accept: 'application/vnd.npm.install-v1+json' },
+          },
+        ).catch(() => null),
       ])
       return {
         name,
@@ -141,7 +148,7 @@ function barPct(downloads: number): string {
             <span class="text-2xl font-semibold tracking-tight" :style="{ color: pkg.color }">
               {{ pkg.name }}
             </span>
-            <span class="text-2xl font-medium text-[#d4d4d4]">
+            <span class="text-3xl font-bold text-[#fafafa]">
               {{ formatDownloads(pkg.downloads) }}/wk
             </span>
             <span
