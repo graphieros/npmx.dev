@@ -137,7 +137,10 @@ function barPct(downloads: number): string {
         <div v-for="pkg in stats" :key="pkg.name" class="flex flex-col gap-1">
           <!-- Label row: name + downloads + version -->
           <div class="flex items-center gap-3" style="font-family: 'Geist', sans-serif">
-            <span class="text-2xl font-semibold tracking-tight" :style="{ color: pkg.color }">
+            <span
+              class="text-2xl font-semibold tracking-tight truncate max-w-[400px]"
+              :style="{ color: pkg.color }"
+            >
               {{ pkg.name }}
             </span>
             <span class="text-3xl font-bold text-[#fafafa]">
