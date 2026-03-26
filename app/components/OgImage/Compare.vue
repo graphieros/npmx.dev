@@ -49,13 +49,10 @@ try {
           `https://api.npmjs.org/downloads/point/last-week/${encoded}`,
           { timeout: FETCH_TIMEOUT_MS },
         ).catch(() => null),
-        $fetch<{ 'dist-tags'?: { latest?: string } }>(
-          `https://registry.npmjs.org/${encoded}`,
-          {
-            timeout: FETCH_TIMEOUT_MS,
-            headers: { Accept: 'application/vnd.npm.install-v1+json' },
-          },
-        ).catch(() => null),
+        $fetch<{ 'dist-tags'?: { latest?: string } }>(`https://registry.npmjs.org/${encoded}`, {
+          timeout: FETCH_TIMEOUT_MS,
+          headers: { Accept: 'application/vnd.npm.install-v1+json' },
+        }).catch(() => null),
       ])
       return {
         name,
