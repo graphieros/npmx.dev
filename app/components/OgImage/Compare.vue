@@ -70,21 +70,18 @@ if (layoutTier.value !== 'summary') {
     const results = await Promise.all(
       displayPackages.value.map(async (name, index) => {
         const encoded = encodePackageName(name)
-        const needsVersion = layoutTier.value === 'full'
         const [dlData, pkgData] = await Promise.all([
           $fetch<{ downloads: number }>(
             `https://api.npmjs.org/downloads/point/last-week/${encoded}`,
             { timeout: FETCH_TIMEOUT_MS },
           ).catch(() => null),
-          needsVersion
-            ? $fetch<{ 'dist-tags'?: { latest?: string } }>(
-                `https://registry.npmjs.org/${encoded}`,
-                {
-                  timeout: FETCH_TIMEOUT_MS,
-                  headers: { Accept: 'application/vnd.npm.install-v1+json' },
-                },
-              ).catch(() => null)
-            : Promise.resolve(null),
+          $fetch<{ 'dist-tags'?: { latest?: string } }>(
+            `https://registry.npmjs.org/${encoded}`,
+            {
+              timeout: FETCH_TIMEOUT_MS,
+              headers: { Accept: 'application/vnd.npm.install-v1+json' },
+            },
+          ).catch(() => null),
         ])
         return {
           name,
@@ -164,8 +161,8 @@ const summaryRemainder = computed(() =>
       <!-- Icon + title row -->
       <div class="flex items-start gap-4">
         <div
-          class="flex items-center justify-center w-16 h-16 p-3.5 rounded-xl shadow-lg bg-gradient-to-tr from-[#3b82f6]"
-          :style="{ backgroundColor: primaryColor }"
+          class="flex items-center justify-center w-16 h-16 p-3.5 rounded-xl shadow-lg"
+          :style="{ background: `linear-gradient(to top right, #3b82f6, ${primaryColor})` }"
         >
           <svg
             width="36"
@@ -215,9 +212,6 @@ const summaryRemainder = computed(() =>
             >
               {{ pkg.name }}
             </span>
-            <span class="text-3xl font-bold text-[#fafafa]">
-              {{ formatDownloads(pkg.downloads) }}/wk
-            </span>
             <span
               v-if="pkg.version"
               class="text-lg px-2 py-0.5 rounded-md border"
@@ -228,6 +222,9 @@ const summaryRemainder = computed(() =>
               }"
             >
               {{ pkg.version }}
+            </span>
+            <span class="text-3xl font-bold text-[#fafafa]">
+              {{ formatDownloads(pkg.downloads) }}/wk
             </span>
           </div>
           <div
@@ -249,6 +246,17 @@ const summaryRemainder = computed(() =>
               :style="{ color: pkg.color }"
             >
               {{ pkg.name }}
+            </span>
+            <span
+              v-if="pkg.version"
+              class="text-sm px-1.5 py-0.5 rounded border"
+              :style="{
+                color: pkg.color,
+                backgroundColor: pkg.color + '10',
+                borderColor: pkg.color + '30',
+              }"
+            >
+              {{ pkg.version }}
             </span>
             <span class="text-xl font-bold text-[#fafafa]">
               {{ formatDownloads(pkg.downloads) }}/wk
@@ -282,17 +290,23 @@ const summaryRemainder = computed(() =>
               width: gridItemWidth,
             }"
           >
-            <span
-              class="font-semibold tracking-tight"
-              :style="{
-                fontSize: '18px',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                color: pkg.color,
-              }"
-              >{{ pkg.name }}</span
-            >
+            <span class="flex items-baseline gap-1.5">
+              <span
+                class="font-semibold tracking-tight"
+                :style="{
+                  fontSize: '18px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  color: pkg.color,
+                }"
+                >{{ pkg.name }}</span
+              >
+              <span
+                v-if="pkg.version"
+                class="text-xs text-[#525252]"
+              >{{ pkg.version }}</span>
+            </span>
             <span class="flex items-baseline gap-0.5">
               <span class="text-2xl font-bold text-[#e5e5e5]">{{
                 formatDownloads(pkg.downloads)
@@ -322,6 +336,14 @@ const summaryRemainder = computed(() =>
           </span>
         </div>
       </div>
+    </div>
+
+    <!-- Branding -->
+    <div
+      class="absolute bottom-6 right-20 text-lg font-semibold tracking-tight text-[#525252]"
+      style="font-family: 'Geist Mono', sans-serif"
+    >
+      <span :style="{ color: primaryColor }" class="opacity-80 tracking-[-0.1em]">./</span>npmx
     </div>
 
     <div
