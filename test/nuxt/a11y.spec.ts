@@ -48,6 +48,20 @@ async function runAxe(wrapper: VueWrapper): Promise<AxeResults> {
   return axe.run(container, axeRunOptions)
 }
 
+async function runAxeElements(elements: Array<Element | null | undefined>): Promise<AxeResults> {
+  const container = document.createElement('div')
+  container.id = `test-container-${Date.now()}`
+  document.body.appendChild(container)
+  mountedContainers.push(container)
+
+  for (const element of elements) {
+    if (!element) continue
+    container.appendChild(element.cloneNode(true))
+  }
+
+  return axe.run(container, axeRunOptions)
+}
+
 // --- Console warning assertion --------------------------------------------------
 // Fail any test that emits unexpected console.warn calls. This catches issues
 // like missing/invalid props that would otherwise silently pass.
@@ -144,10 +158,11 @@ import {
   LandingLogo,
   LinkBase,
   CallToAction,
-  ChartPatternSlot,
   CodeDirectoryListing,
   CodeFileTree,
+  CodeHeader,
   CodeMobileTreeDrawer,
+  CodeSkeletonLoader,
   CodeViewer,
   CopyToClipboardButton,
   CollapsibleSection,
@@ -244,6 +259,7 @@ import {
 // Server variant components must be imported directly to test the server-side render
 // The #components import automatically provides the client variant
 import LogoNuxt from '~/assets/logos/oss-partners/nuxt.svg'
+import CommandPaletteComponent from '~/components/CommandPalette.client.vue'
 import HeaderAccountMenuServer from '~/components/Header/AccountMenu.server.vue'
 import ToggleServer from '~/components/Settings/Toggle.server.vue'
 import SearchProviderToggleServer from '~/components/SearchProviderToggle.server.vue'
@@ -486,6 +502,49 @@ describe('component accessibility audits', () => {
       const component = await mountSuspended(BackButton)
       expect(component.find('button').exists()).toBe(true)
       const results = await runAxe(component)
+      expect(results.violations).toEqual([])
+    })
+  })
+
+  describe('CommandPalette', () => {
+    let commandPalette: ReturnType<typeof useCommandPalette> | null = null
+
+    const CommandPaletteHarness = defineComponent({
+      name: 'CommandPaletteHarness',
+      setup() {
+        commandPalette = useCommandPalette()
+
+        onMounted(() => {
+          commandPalette?.open()
+        })
+
+        onBeforeUnmount(() => {
+          commandPalette?.close()
+          commandPalette?.clearPackageContext()
+        })
+
+        return () => h('div', [h(CommandPaletteComponent)])
+      },
+    })
+
+    afterEach(() => {
+      commandPalette?.close()
+      commandPalette?.clearPackageContext()
+      commandPalette = null
+    })
+
+    it('should have no accessibility violations when open', async () => {
+      const wrapper = await mountSuspended(CommandPaletteHarness)
+      await nextTick()
+      await nextTick()
+
+      const dialog = document.getElementById('command-palette-modal')
+      const announcer = wrapper.element.querySelector('#command-palette-modal-announcement')
+
+      expect(dialog).not.toBeNull()
+      expect(announcer).not.toBeNull()
+
+      const results = await runAxeElements([announcer, dialog])
       expect(results.violations).toEqual([])
     })
   })
@@ -1251,6 +1310,44 @@ describe('component accessibility audits', () => {
           keywords: ['keyword1', 'keyword2'],
         },
       })
+      const results = await runAxe(component)
+      expect(results.violations).toEqual([])
+    })
+  })
+
+  describe('CodeHeader', () => {
+    it('should have no accessibility violations', async () => {
+      const component = await mountSuspended(CodeHeader, {
+        props: {
+          filePath: 'misc/true.js',
+          loading: false,
+          isViewingFile: true,
+          isBinaryFile: false,
+          fileContent: {
+            package: 'vite',
+            version: '1.0.0',
+            path: 'misc/true.js',
+            language: 'javascript',
+            contentType: 'application/javascript',
+            content: 'const x = 1;',
+            html: '<pre><code><span class="line">const x = 1;</span></code></pre>',
+            lines: 1,
+          },
+          markdownViewMode: 'preview',
+          selectedLines: null,
+          getCodeUrlWithPath: (path = '') => `/package-code/vite/v/1.0.0/${path}`,
+          packageName: 'vite',
+          version: '1.0.0',
+        },
+      })
+      const results = await runAxe(component)
+      expect(results.violations).toEqual([])
+    })
+  })
+
+  describe('CodeSkeletonLoader', () => {
+    it('should have no accessibility violations', async () => {
+      const component = await mountSuspended(CodeSkeletonLoader)
       const results = await runAxe(component)
       expect(results.violations).toEqual([])
     })
@@ -2256,23 +2353,6 @@ describe('component accessibility audits', () => {
   describe('CallToAction', () => {
     it('should have no accessibility violations', async () => {
       const component = await mountSuspended(CallToAction)
-      const results = await runAxe(component)
-      expect(results.violations).toEqual([])
-    })
-  })
-
-  describe('ChartPatternSlot', () => {
-    it('should have no accessibility violations', async () => {
-      const component = await mountSuspended(ChartPatternSlot, {
-        props: {
-          id: 'perennius',
-          seed: 1,
-          foregroundColor: 'black',
-          fallbackColor: 'transparent',
-          maxSize: 24,
-          minSize: 16,
-        },
-      })
       const results = await runAxe(component)
       expect(results.violations).toEqual([])
     })
