@@ -231,7 +231,6 @@ describe('FacetSelector', () => {
     })
   })
 
-  describe('category all/none buttons', () => {
     function findCategoryActionButton(
       component: Awaited<ReturnType<typeof mountSuspended>>,
       category: string,
@@ -242,6 +241,7 @@ describe('FacetSelector', () => {
       )
     }
 
+  describe('category all/none buttons', () => {
     it('calls selectCategory when all button is clicked', async () => {
       const component = await mountSuspended(FacetSelector)
 
