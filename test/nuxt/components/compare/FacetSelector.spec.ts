@@ -240,7 +240,6 @@ describe('FacetSelector', () => {
       `button[data-facet-category="${category}"][data-facet-category-action="${action}"]`,
     )
   }
-  
   describe('category all/none buttons', () => {
     it('calls selectCategory when all button is clicked', async () => {
       const component = await mountSuspended(FacetSelector)
