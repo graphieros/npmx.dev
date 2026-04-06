@@ -231,17 +231,17 @@ describe('FacetSelector', () => {
     })
   })
 
+  function findCategoryActionButton(
+    component: Awaited<ReturnType<typeof mountSuspended>>,
+    category: string,
+    action: 'all' | 'none',
+  ) {
+    return component.find(
+      `button[data-facet-category="${category}"][data-facet-category-action="${action}"]`,
+    )
+  }
+  
   describe('category all/none buttons', () => {
-    function findCategoryActionButton(
-      component: Awaited<ReturnType<typeof mountSuspended>>,
-      category: string,
-      action: 'all' | 'none',
-    ) {
-      return component.find(
-        `button[data-facet-category="${category}"][data-facet-category-action="${action}"]`,
-      )
-    }
-
     it('calls selectCategory when all button is clicked', async () => {
       const component = await mountSuspended(FacetSelector)
 
