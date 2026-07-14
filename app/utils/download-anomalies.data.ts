@@ -30,8 +30,8 @@ export const DOWNLOAD_ANOMALIES: DownloadAnomaly[] = [
   // color-bridge unexplained single spike of 935 downloads
   {
     packageName: 'color-bridge',
-    start: { date: '2026-07-09', weeklyDownloads: 2 },
-    end: { date: '2026-07-11', weeklyDownloads: 2 },
+    start: { date: '2026-07-09', weeklyDownloads: 10 },
+    end: { date: '2026-07-11', weeklyDownloads: 10 },
   },
   /**
    * NOTE:
